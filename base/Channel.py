@@ -1,20 +1,17 @@
 import os
 from datetime import datetime
+from base.defines import status
+from yaml import YAMLObject
 
 
-class Channel:
+class Channel(YAMLObject):
     '''Channel'''
 
     ids = 0
 
     loss_limit = 50
     delay_limit = 1000
-    status_dict = {
-        -1: 'Not checked',
-        0: 'OK',
-        1: 'No connection',
-        2: 'Bad connection'
-    }
+    status_list = status['channel']
 
     def __init__(self, name, ip, port=502, timeout=1, country=None, city=None, desc=''):
         '''
@@ -38,7 +35,7 @@ class Channel:
         self.timeout = timeout
 
         # Channel status and statistics
-        self.status = -1
+        self.status = self.status_list[0]
         self.delay = -1
         self.last_upd = -1
         self.active_devices = 0
@@ -54,17 +51,20 @@ class Channel:
 
     def update(self):
         ping_result = self.ping(self.ip, timeout=self.timeout*1000+1000)
-        self.last_upd = datetime.now()
         self.delay = ping_result['Average delay, ms']
         if self.delay == -1:
-            self.status = 1
-        elif ping_result['Average delay, ms'] > 1000 or ping_result['Loss, %'] > 50:
-            self.status = 2
+            self.status = self.status_list[1]
+        elif ping_result['Average delay, ms'] > self.delay_limit or ping_result['Loss, %'] > self.loss_limit:
+            self.status = self.status_list[2]
         else:
-            self.status = 0
+            self.status = self.status_list[3]
+        self.last_upd = datetime.now()
 
     def __str__(self):
-        return f'{self.name} {self.ip}:{self.port} | Status:{self.status_dict[self.status]}'
+        return f'{self.name} | {self.ip}:{self.port} | {self.status} | Devices: {self.active_devices} | {self.desc} '
+
+    def __repr__(self):
+        return str(self)
 
     @staticmethod
     def ping(ip, count=4, size=32, timeout=1000):

@@ -1,14 +1,3 @@
-'''
-01 (0x01)	Чтение DO	Read Coil Status	Дискретное	Чтение
-02 (0x02)	Чтение DI	Read Input Status	Дискретное	Чтение
-03 (0x03)	Чтение AO	Read Holding Registers	16 битное	Чтение
-04 (0x04)	Чтение AI	Read Input Registers	16 битное	Чтение
-05 (0x05)	Запись одного DO	Force Single Coil	Дискретное	Запись
-06 (0x06)	Запись одного AO	Preset Single Register	16 битное	Запись
-15 (0x0F)	Запись нескольких DO	Force Multiple Coils	Дискретное	Запись
-16 (0x10)	Запись нескольких AO	Preset Multiple Registers	16 битное	Запись
-'''
-
 from abc import ABC, abstractmethod
 import struct
 

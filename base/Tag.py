@@ -1,8 +1,8 @@
+from yaml import YAMLObject
 
 
-class Tag:
+class Tag(YAMLObject):
     '''Tag -- description variable in device'''
-
 
     ids = 0
 
@@ -43,3 +43,9 @@ class Tag:
 
     def __del__(self):
         self.ids -= 1
+
+    def __str__(self):
+        return f'{self.name} | {self.datatype.name} | Address: {self.address}'
+
+    def __repr__(self):
+        return str(self)

@@ -1,18 +1,14 @@
 from datetime import datetime
+from base.defines import status
 import modbus_tcp
+from yaml import YAMLObject
 
 
-class Device:
+class Device(YAMLObject):
     '''Device'''
 
     ids = 0
-
-    status_dict = {
-        -1: 'Not checked',
-        0: 'OK',
-        1: 'No connection',
-        2: 'Problems with some tags'
-    }
+    status_list = status['device']
 
     def __init__(self, name, modbus_id, tags, channel, desc=''):
         '''
@@ -47,14 +43,21 @@ class Device:
         self.ids -= 1
         self.channel.active_devices -= 1
 
+    def __str__(self):
+        return f'{self.name} | Id:{self.modbus_id} | Tags: {len(self.tags)} | {self.desc}'
+
+    def __repr__(self):
+        return str(self)
+
     def update(self):
         self.channel.update()
         if self.channel.status:
-            self.status = 1_000_000
+            self.status = 1
         else:
             self.status = 0
         self.last_upd = datetime.now()
-        self.status += self.read_all_tags()
+        self.read_all_tags()
+
 
     def generate_pockets(self):
         pockets = []
